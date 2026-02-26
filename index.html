@@ -3,26 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChinaChinaChina</title>
+    <title>Campus Virtual de Chino para Yuni</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
     <script src="https://unpkg.com/pinyin-pro"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; overflow: hidden; }
-        .lang-zh { font-family: 'Noto Sans SC', sans-serif; }
+        /* Configuraciones globales de diseño */
+        body { font-family: 'Inter', sans-serif; overflow: hidden; background-color: #f8fafc; }
+        .lang-zh { font-family: 'Noto Sans SC', sans-serif; } 
         
-        /* Utilidades para Flashcards 3D */
+        /* Clases para el efecto 3D de las Flashcards */
         .perspective-1000 { perspective: 1000px; }
         .card-inner {
             position: relative; width: 100%; height: 100%;
@@ -32,13 +28,13 @@
         .is-flipped { transform: rotateY(180deg); }
         .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
         
-        /* Custom scrollbar para un look profesional */
-        ::-webkit-scrollbar { width: 6px; }
+        /* Estilos de barra de desplazamiento (Scrollbar) */
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 h-screen flex">
+<body class="text-slate-800 h-screen flex">
     <div id="root" class="w-full h-full"></div>
 
     <script type="text/babel">
@@ -46,7 +42,7 @@
         const { pinyin } = pinyinPro;
 
         // ==========================================
-        // ICONOS SVG REUTILIZABLES
+        // 2. BANCO DE ICONOS SVG
         // ==========================================
         const Icons = {
             Book: () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>,
@@ -54,120 +50,227 @@
             Settings: () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
             Play: () => <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>,
             Plus: () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-            Check: () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>,
-            Download: () => <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-            Upload: () => <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>,
-            Trash: () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>,
-            Chart: () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Check: () => <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>,
+            Chart: () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+            ArrowLeft: () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
         };
 
+       // ==========================================
+        // 3. LA BÓVEDA DE DATOS (Lecciones 15, 16, 17 y 18)
+        // Reemplaza tu bloque COURSE_DATA actual con este.
         // ==========================================
-        // DATOS DE EJEMPLO (Lección 16)
-        // ==========================================
-        const MOCK_LESSON = {
-            id: 16,
-            title: "Lección 16: Horóscopo y Fechas",
-            dialogue: [
-                { hanzi: "你好！你的生日是几月几号？", pinyin: "Nǐ hǎo! Nǐ de shēngrì shì jǐ yuè jǐ hào?", translation: "¡Hola! ¿Qué fecha es tu cumpleaños?", time: 10 },
-                { hanzi: "我的生日是十二月二十五号。", pinyin: "Wǒ de shēngrì shì shí'èr yuè èrshíwǔ hào.", translation: "Mi cumpleaños es el 25 de diciembre.", time: 15 },
-                { hanzi: "太好了！那天是圣诞节。", pinyin: "Tài hǎo le! Nà tiān shì Shèngdànjié.", translation: "¡Genial! Ese día es Navidad.", time: 20 }
-            ],
-            vocabulary: [
-                { id: "v1", hanzi: "生日", pinyin: "shēngrì", translation: "Cumpleaños", cat: "Sustantivo" },
-                { id: "v2", hanzi: "圣诞节", pinyin: "Shèngdànjié", translation: "Navidad", cat: "Nombre Propio" },
-                { id: "v3", hanzi: "月", pinyin: "yuè", translation: "Mes", cat: "Sustantivo" },
-                { id: "v4", hanzi: "参加", pinyin: "cānjiā", translation: "Participar", cat: "Verbo" },
-                { id: "v5", hanzi: "鼠", pinyin: "shǔ", translation: "Rata (Zodiaco)", cat: "Sustantivo" }
-            ],
-            grammar: [
-                { title: "Expresión de Fechas", content: "En chino, las fechas van de mayor a menor: Año (年) + Mes (月) + Día (号/日). Ejemplo: 2024年5月1号." }
-            ],
-            culture: {
-                title: "El Zodiaco Chino (生肖)",
-                content: "Consta de 12 animales. Tu animal se determina por tu año lunar de nacimiento. El ciclo empieza con la Rata y termina con el Cerdo.",
-                emoji: "🐉"
+        const COURSE_DATA = [
+            {
+                id: 15, unit: 3, title: "Lección 15: La Hora y Rutina",
+                dialogue: [
+                    { hanzi: "请问，现在几点？", pinyin: "Qǐngwèn, xiànzài jǐ diǎn?", translation: "Disculpe, ¿qué hora es ahora?", time: 2 },
+                    { hanzi: "现在八点半。", pinyin: "Xiànzài bā diǎn bàn.", translation: "Son las ocho y media.", time: 6 },
+                    { hanzi: "你每天几点起床？", pinyin: "Nǐ měitiān jǐ diǎn qǐchuáng?", translation: "¿A qué hora te levantas todos los días?", time: 10 },
+                    { hanzi: "我早上七点起床。", pinyin: "Wǒ zǎoshang qī diǎn qǐchuáng.", translation: "Me levanto a las siete de la mañana.", time: 14 }
+                ],
+                vocabulary: [
+                    { id: "15_1", hanzi: "现在", pinyin: "xiànzài", translation: "Ahora", cat: "Sustantivo de tiempo" },
+                    { id: "15_2", hanzi: "点", pinyin: "diǎn", translation: "Hora (en punto)", cat: "Clasificador" },
+                    { id: "15_3", hanzi: "半", pinyin: "bàn", translation: "Medio / Media", cat: "Número" },
+                    { id: "15_4", hanzi: "每天", pinyin: "měitiān", translation: "Todos los días", cat: "Pronombre" },
+                    { id: "15_5", hanzi: "起床", pinyin: "qǐchuáng", translation: "Levantarse (de la cama)", cat: "Verbo" }
+                ],
+                grammar: [
+                    { title: "La hora en chino", content: "Para decir la hora se usa la estructura: Número + 点 (diǎn) para la hora, y Número + 分 (fēn) para los minutos. 'Y media' se dice 半 (bàn)." },
+                    { title: "El tiempo como sujeto", content: "En chino, las palabras que indican tiempo (hoy, mañana, a las 8:00) siempre se colocan AL PRINCIPIO de la oración, antes o justo después del sujeto. Ejemplo: 我八点吃 (Yo a las 8 como)." }
+                ],
+                culture: { title: "El ritmo de vida y la siesta", content: "En China, los horarios suelen ser muy tempranos. El almuerzo es a las 12:00 en punto, y es muy común en oficinas y escuelas tomar una pequeña siesta (午休 - wǔxiū) después de comer.", emoji: "⏰" },
+                exerciseTarget: "现在几点", exerciseWords: ["现在", "是", "几", "点", "吗"], characterToPractice: "点"
+            },
+            {
+                id: 16, unit: 3, title: "Lección 16: Horóscopo y Fechas",
+                dialogue: [
+                    { hanzi: "你好！你的生日是几月几号？", pinyin: "Nǐ hǎo! Nǐ de shēngrì shì jǐ yuè jǐ hào?", translation: "¡Hola! ¿Qué fecha es tu cumpleaños?", time: 20 },
+                    { hanzi: "我的生日是十二月二十五号。", pinyin: "Wǒ de shēngrì shì shí'èr yuè èrshíwǔ hào.", translation: "Mi cumpleaños es el 25 de diciembre.", time: 25 },
+                    { hanzi: "太好了！那天是圣诞节。", pinyin: "Tài hǎo le! Nà tiān shì Shèngdànjié.", translation: "¡Genial! Ese día es Navidad.", time: 30 }
+                ],
+                vocabulary: [
+                    { id: "16_1", hanzi: "生日", pinyin: "shēngrì", translation: "Cumpleaños", cat: "Sustantivo" },
+                    { id: "16_2", hanzi: "圣诞节", pinyin: "Shèngdànjié", translation: "Navidad", cat: "Nombre Propio" },
+                    { id: "16_3", hanzi: "月", pinyin: "yuè", translation: "Mes", cat: "Sustantivo" },
+                    { id: "16_4", hanzi: "号", pinyin: "hào", translation: "Día / Número", cat: "Sustantivo" },
+                    { id: "16_5", hanzi: "鼠", pinyin: "shǔ", translation: "Rata (Zodiaco)", cat: "Sustantivo" }
+                ],
+                grammar: [
+                    { title: "Expresión de Fechas", content: "En chino, el tiempo siempre se expresa de mayor a menor: Año (年) + Mes (月) + Día (号 o 日). Ejemplo: 二〇二四年五月一号." }
+                ],
+                culture: { title: "El Zodiaco Chino", content: "Consta de 12 animales. Tu animal se determina por tu año lunar de nacimiento. El ciclo inicia con la Rata.", emoji: "🐉" },
+                exerciseTarget: "我的生日是十二月", exerciseWords: ["十二月", "的", "是", "生日", "我", "太好了"], characterToPractice: "生"
+            },
+            {
+                id: 17, unit: 4, title: "Lección 17: De Compras y Precios",
+                dialogue: [
+                    { hanzi: "请问，这个多少钱？", pinyin: "Qǐngwèn, zhège duōshao qián?", translation: "Disculpe, ¿cuánto cuesta esto?", time: 35 },
+                    { hanzi: "这个五十块。", pinyin: "Zhège wǔshí kuài.", translation: "Esto cuesta 50 yuanes.", time: 38 },
+                    { hanzi: "太贵了！能便宜一点儿吗？", pinyin: "Tài guì le! Néng piányi yìdiǎnr ma?", translation: "¡Demasiado caro! ¿Puede ser un poco más barato?", time: 42 },
+                    { hanzi: "好吧，四十块。", pinyin: "Hǎo ba, sìshí kuài.", translation: "Está bien, 40 yuanes.", time: 46 }
+                ],
+                vocabulary: [
+                    { id: "17_1", hanzi: "钱", pinyin: "qián", translation: "Dinero", cat: "Sustantivo" },
+                    { id: "17_2", hanzi: "块", pinyin: "kuài", translation: "Yuan (unidad de dinero)", cat: "Clasificador" },
+                    { id: "17_3", hanzi: "贵", pinyin: "guì", translation: "Caro", cat: "Adjetivo" },
+                    { id: "17_4", hanzi: "便宜", pinyin: "piányi", translation: "Barato", cat: "Adjetivo" },
+                    { id: "17_5", hanzi: "这个", pinyin: "zhège", translation: "Esto / Este", cat: "Pronombre" }
+                ],
+                grammar: [
+                    { title: "Expresar Precios", content: "En el lenguaje hablado, la unidad monetaria básica (Yuan) se dice 块 (kuài). Si hay céntimos, se añade 毛 (máo). Ejemplo: 5,50 = 五块五毛 (wǔ kuài wǔ máo)." },
+                    { title: "Estructura 太...了 (tài...le)", content: "Se utiliza para expresar exceso o un grado muy alto, frecuentemente como queja. Ejemplo: 太贵了 (¡Demasiado caro!)." }
+                ],
+                culture: { title: "El arte del regateo", content: "En los mercados tradicionales y tiendas de ropa en China, el regateo (讨价还价) es una práctica cultural esperada. Empezar pidiendo un precio mucho menor es normal.", emoji: "🛍️" },
+                exerciseTarget: "这个多少钱", exerciseWords: ["钱", "是", "多少", "这个", "贵", "吗"], characterToPractice: "钱"
+            },
+            {
+                id: 18, unit: 4, title: "Lección 18: En el Restaurante",
+                dialogue: [
+                    { hanzi: "你想吃什么？", pinyin: "Nǐ xiǎng chī shénme?", translation: "¿Qué te gustaría comer?", time: 50 },
+                    { hanzi: "我想吃北京烤鸭。", pinyin: "Wǒ xiǎng chī Běijīng kǎoyā.", translation: "Quiero comer pato asado de Pekín.", time: 54 },
+                    { hanzi: "喝点儿什么？", pinyin: "Hē diǎnr shénme?", translation: "¿Qué van a beber?", time: 58 },
+                    { hanzi: "来一瓶啤酒。", pinyin: "Lái yì píng píjiǔ.", translation: "Tráigame una botella de cerveza.", time: 62 }
+                ],
+                vocabulary: [
+                    { id: "18_1", hanzi: "想", pinyin: "xiǎng", translation: "Querer / Desear", cat: "Verbo auxiliar" },
+                    { id: "18_2", hanzi: "吃", pinyin: "chī", translation: "Comer", cat: "Verbo" },
+                    { id: "18_3", hanzi: "喝", pinyin: "hē", translation: "Beber", cat: "Verbo" },
+                    { id: "18_4", hanzi: "烤鸭", pinyin: "kǎoyā", translation: "Pato asado", cat: "Sustantivo" },
+                    { id: "18_5", hanzi: "啤酒", pinyin: "píjiǔ", translation: "Cerveza", cat: "Sustantivo" }
+                ],
+                grammar: [
+                    { title: "El verbo auxiliar 想 (xiǎng)", content: "Se coloca antes del verbo principal para expresar un deseo o intención de hacer algo. Ejemplo: 我想吃 (Quiero comer)." },
+                    { title: "El uso de 来 (lái) en restaurantes", content: "Aunque 来 significa 'venir', en los restaurantes se utiliza para pedir. Literalmente significa 'haz venir...' o 'tráigame'. Ejemplo: 来一瓶水 (Tráigame una botella de agua)." }
+                ],
+                culture: { title: "La cultura culinaria china", content: "La comida es un pilar fundamental de la cultura china. El 'Pato Laqueado de Pekín' (北京烤鸭) es uno de sus platos más emblemáticos, famoso por su piel crujiente.", emoji: "🦆" },
+                exerciseTarget: "你想吃什么", exerciseWords: ["想", "我", "吃", "什么", "你", "喝"], characterToPractice: "吃"
             }
-        };
+        ];
 
         // ==========================================
-        // COMPONENTE PRINCIPAL (App)
+        // 4. COMPONENTE PRINCIPAL (Controlador de Vistas)
         // ==========================================
         function App() {
-            // Estados Globales Persistentes
-            const [view, setView] = useState('lesson'); // lesson | dictionary | flashcards | progress
+            const [view, setView] = useState('lessons'); 
+            const [currentLessonId, setCurrentLessonId] = useState(null); 
+            
+            // Persistencia en LocalStorage para guardar el diccionario
             const [deck, setDeck] = useState(() => {
-                const saved = localStorage.getItem('edtech-deck');
+                const saved = localStorage.getItem('edtech-deck'); 
                 return saved ? JSON.parse(saved) : [];
             });
+            
+            // Persistencia para el progreso de lecciones
             const [progress, setProgress] = useState(() => {
-                const saved = localStorage.getItem('edtech-progress');
+                const saved = localStorage.getItem('edtech-progress'); 
                 return saved ? JSON.parse(saved) : { completedLessons: [], wordsMastered: 0 };
             });
 
-            // Guardar cambios en LocalStorage automáticamente
             useEffect(() => { localStorage.setItem('edtech-deck', JSON.stringify(deck)); }, [deck]);
             useEffect(() => { localStorage.setItem('edtech-progress', JSON.stringify(progress)); }, [progress]);
 
-            // Función para añadir palabras al mazo
             const addToDeck = (word) => {
                 if (!deck.find(w => w.hanzi === word.hanzi)) {
                     setDeck([{ ...word, id: Date.now(), mastered: false }, ...deck]);
                 }
             };
 
+            const toggleLessonComplete = (lessonId) => {
+                let updated = [...progress.completedLessons];
+                if (updated.includes(lessonId)) {
+                    updated = updated.filter(id => id !== lessonId); 
+                } else {
+                    updated.push(lessonId); 
+                }
+                setProgress({...progress, completedLessons: updated});
+            };
+
+            const openLesson = (id) => { setCurrentLessonId(id); setView('active_lesson'); };
+            const closeLesson = () => { setCurrentLessonId(null); setView('lessons'); };
+
             return (
                 <div className="flex w-full h-full bg-slate-50 overflow-hidden">
-                    {/* BARRA LATERAL (Sidebar) */}
+                    {/* BARRA LATERAL (Menú) */}
                     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex z-10 shadow-sm">
                         <div>
                             <div className="p-6 border-b border-slate-100">
                                 <h1 className="text-xl font-black text-indigo-700 leading-tight">El Chino<br/>de Hoy</h1>
-                                <p className="text-xs font-semibold text-slate-400 mt-1 tracking-widest uppercase">Plataforma EdTech</p>
                             </div>
                             <nav className="p-4 space-y-2">
-                                <SidebarBtn active={view === 'lesson'} onClick={() => setView('lesson')} icon={<Icons.Book />} text="Lección Interactiva" />
+                                <SidebarBtn active={view === 'lessons' || view === 'active_lesson'} onClick={closeLesson} icon={<Icons.Book />} text="Módulos de Clase" />
                                 <SidebarBtn active={view === 'dictionary'} onClick={() => setView('dictionary')} icon={<Icons.Settings />} text="Mi Diccionario" />
                                 <SidebarBtn active={view === 'flashcards'} onClick={() => setView('flashcards')} icon={<Icons.Cards />} text="Modo Estudio" />
-                                <SidebarBtn active={view === 'progress'} onClick={() => setView('progress')} icon={<Icons.Chart />} text="Progreso HSK" />
+                                <SidebarBtn active={view === 'progress'} onClick={() => setView('progress')} icon={<Icons.Chart />} text="Progreso General" />
                             </nav>
                         </div>
-                        {/* Reproductor Global Fijo (YouTube iframe oculto visualmente pero con controles, o mini) */}
+                        {/* Audio General del Curso de YouTube */}
                         <div className="p-4 bg-slate-50 border-t border-slate-200">
                             <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Audio Global</p>
-                            <iframe 
-                                className="w-full h-20 rounded-xl shadow-inner" 
-                                src="https://www.youtube.com/embed/videoseries?list=PLoiPD_2ruSu07wPhopKOlSIieDbec4Wmj" 
-                                title="YouTube video player" 
-                                frameBorder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowFullScreen>
-                            </iframe>
+                            <iframe className="w-full h-20 rounded-xl shadow-inner" src="https://www.youtube.com/embed/videoseries?list=PLoiPD_2ruSu07wPhopKOlSIieDbec4Wmj" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                         </div>
                     </aside>
 
-                    {/* ÁREA PRINCIPAL DINÁMICA */}
+                    {/* CONTENEDOR PRINCIPAL */}
                     <main className="flex-1 h-full overflow-y-auto relative scroll-smooth">
-                        {view === 'lesson' && <LessonView lesson={MOCK_LESSON} addToDeck={addToDeck} deck={deck} />}
+                        {view === 'lessons' && <LessonMenu lessons={COURSE_DATA} progress={progress} openLesson={openLesson} />}
+                        {view === 'active_lesson' && <LessonDetail lesson={COURSE_DATA.find(l => l.id === currentLessonId)} closeLesson={closeLesson} addToDeck={addToDeck} deck={deck} toggleComplete={() => toggleLessonComplete(currentLessonId)} isCompleted={progress.completedLessons.includes(currentLessonId)} />}
                         {view === 'dictionary' && <DictionaryView deck={deck} setDeck={setDeck} />}
                         {view === 'flashcards' && <FlashcardsView deck={deck} setDeck={setDeck} setProgress={setProgress} progress={progress} />}
-                        {view === 'progress' && <ProgressView progress={progress} deck={deck} />}
+                        {view === 'progress' && <ProgressView progress={progress} deck={deck} totalLessons={COURSE_DATA.length} />}
                     </main>
                 </div>
             );
         }
 
         // ==========================================
-        // VISTA 1: LECCIÓN INTERACTIVA (6 BLOQUES)
+        // VISTA: MENÚ DE LECCIONES
         // ==========================================
-        function LessonView({ lesson, addToDeck, deck }) {
+        function LessonMenu({ lessons, progress, openLesson }) {
+            return (
+                <div className="max-w-5xl mx-auto p-6 md:p-10">
+                    <header className="mb-10">
+                        <h2 className="text-4xl font-black text-slate-800">Programa del Curso</h2>
+                        <p className="text-slate-500 font-medium mt-2">Selecciona una lección para comenzar o repasar.</p>
+                    </header>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {lessons.map(lesson => {
+                            const isDone = progress.completedLessons.includes(lesson.id);
+                            return (
+                                <div key={lesson.id} onClick={() => openLesson(lesson.id)} className={`relative p-6 rounded-3xl cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg border-2 ${isDone ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-100 shadow-sm'}`}>
+                                    {isDone && <div className="absolute top-4 right-4 text-emerald-500 bg-white rounded-full p-1 shadow-sm"><Icons.Check /></div>}
+                                    <span className="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2 block">Unidad {lesson.unit}</span>
+                                    <h3 className="text-xl font-bold text-slate-800 mb-4 pr-6">{lesson.title}</h3>
+                                    <div className="flex gap-2">
+                                        <span className="text-xs font-medium bg-white px-2 py-1 rounded text-slate-500 border border-slate-100">{lesson.vocabulary.length} palabras</span>
+                                    </div>
+                                    <button className={`mt-6 w-full py-3 rounded-xl font-bold transition ${isDone ? 'bg-emerald-200 text-emerald-800' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}>
+                                        {isDone ? 'Repasar Lección' : 'Empezar Lección'}
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        // ==========================================
+        // VISTA: DETALLE DE LA LECCIÓN E INTERACTIVIDAD
+        // ==========================================
+        function LessonDetail({ lesson, closeLesson, addToDeck, deck, toggleComplete, isCompleted }) {
             return (
                 <div className="max-w-4xl mx-auto p-6 md:p-10 space-y-10 pb-20">
+                    <button onClick={closeLesson} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold transition">
+                        <Icons.ArrowLeft /> Volver al temario
+                    </button>
+
                     <header>
-                        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-widest">Unidad 3</span>
+                        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-widest">Unidad {lesson.unit}</span>
                         <h2 className="text-4xl font-black text-slate-800 mt-4">{lesson.title}</h2>
                     </header>
 
-                    {/* BLOQUE 1: MÓDULO DE TEXTO */}
+                    {/* Módulo de Diálogos */}
                     <section className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Icons.Book/> 1. Diálogo</h3>
                         <div className="space-y-6">
@@ -186,7 +289,7 @@
                         </div>
                     </section>
 
-                    {/* BLOQUE 2: GLOSARIO */}
+                    {/* Glosario y Botón de Agregar Flashcards */}
                     <section className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Icons.Settings/> 2. Palabras Nuevas</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -197,14 +300,9 @@
                                         <div>
                                             <span className="text-2xl font-bold lang-zh text-slate-800">{word.hanzi}</span>
                                             <span className="ml-3 text-sm text-slate-400 font-serif">{word.pinyin}</span>
-                                            <p className="text-sm font-bold text-slate-600 mt-1">{word.translation} <span className="text-[10px] uppercase bg-slate-200 px-2 py-0.5 rounded ml-2 text-slate-500">{word.cat}</span></p>
+                                            <p className="text-sm font-bold text-slate-600 mt-1">{word.translation}</p>
                                         </div>
-                                        <button 
-                                            onClick={() => addToDeck(word)}
-                                            disabled={inDeck}
-                                            className={`p-3 rounded-xl transition ${inDeck ? 'bg-emerald-100 text-emerald-600 cursor-not-allowed' : 'bg-white shadow border border-slate-200 text-indigo-600 hover:bg-indigo-50'}`}
-                                            title={inDeck ? "Ya en tu mazo" : "Añadir a mi diccionario"}
-                                        >
+                                        <button onClick={() => addToDeck(word)} disabled={inDeck} className={`p-3 rounded-xl transition ${inDeck ? 'bg-emerald-100 text-emerald-600 cursor-not-allowed' : 'bg-white shadow text-indigo-600 hover:bg-indigo-50'}`}>
                                             {inDeck ? <Icons.Check /> : <Icons.Plus />}
                                         </button>
                                     </div>
@@ -213,58 +311,55 @@
                         </div>
                     </section>
 
-                    {/* BLOQUE 3: NOTAS Y GRAMÁTICA */}
+                    {/* Gramática */}
                     <section className="bg-indigo-50 p-8 rounded-3xl border border-indigo-100">
                         <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-4">3. Puntos de Lengua</h3>
                         {lesson.grammar.map((g, idx) => (
-                            <div key={idx} className="bg-white p-5 rounded-2xl shadow-sm">
+                            <div key={idx} className="bg-white p-5 rounded-2xl shadow-sm mb-4">
                                 <h4 className="font-bold text-indigo-700 text-lg mb-2">{g.title}</h4>
                                 <p className="text-slate-600 font-medium leading-relaxed">{g.content}</p>
                             </div>
                         ))}
                     </section>
 
-                    {/* BLOQUE 4: LABORATORIO DE EJERCICIOS (Drag/Click & Drop + Hanzi Writer) */}
+                    {/* Ejercicios y Trazos */}
                     <section className="grid md:grid-cols-2 gap-6">
-                        {/* Constructor de Frases estilo Duolingo */}
                         <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">4A. Constructor de Frase</h3>
-                            <p className="font-bold text-slate-700 mb-4">Traduce: "Mi cumpleaños es el 25"</p>
-                            <SentenceBuilder 
-                                target="我的生日是二十五号" 
-                                words={["二十五号", "的", "是", "生日", "我", "太好了"]} 
-                            />
+                            <SentenceBuilder target={lesson.exerciseTarget} words={lesson.exerciseWords} />
                         </div>
-
-                        {/* Práctica de Trazos */}
                         <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center">
-                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 w-full text-left">4B. Trazos (Escritura)</h3>
-                            <p className="font-medium text-slate-500 mb-4 text-sm w-full text-left">Practica el orden del carácter 汉 (Han)</p>
-                            <HanziCanvas character="汉" />
+                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 w-full">4B. Trazos</h3>
+                            <HanziCanvas character={lesson.characterToPractice} />
                         </div>
                     </section>
 
-                    {/* BLOQUE 5: CÁPSULA CULTURAL */}
+                    {/* Cultura */}
                     <section className="bg-slate-800 text-white p-8 rounded-3xl relative overflow-hidden">
                         <div className="absolute -right-10 -top-10 text-[150px] opacity-10">{lesson.culture.emoji}</div>
                         <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-4 relative z-10">5. Cápsula Cultural</h3>
                         <h4 className="text-2xl font-black mb-2 relative z-10">{lesson.culture.title}</h4>
                         <p className="text-slate-300 font-medium leading-relaxed relative z-10 md:w-2/3">{lesson.culture.content}</p>
                     </section>
+
+                    {/* Completar Lección */}
+                    <section className={`p-8 rounded-3xl text-center border-2 transition-colors ${isCompleted ? 'bg-emerald-100 border-emerald-300' : 'bg-white shadow-sm border-slate-200'}`}>
+                        <h3 className="text-2xl font-black text-slate-800 mb-2">{isCompleted ? '¡Lección Completada! 🎉' : '¿Terminaste los ejercicios?'}</h3>
+                        <button onClick={toggleComplete} className={`mt-4 px-8 py-4 rounded-2xl font-black text-lg transition flex items-center justify-center gap-2 mx-auto ${isCompleted ? 'bg-white text-emerald-600 shadow-sm' : 'bg-indigo-600 text-white shadow-lg'}`}>
+                            <Icons.Check /> {isCompleted ? 'Desmarcar Lección' : 'Marcar como Completada'}
+                        </button>
+                    </section>
                 </div>
             );
         }
 
         // ==========================================
-        // VISTA 2: DICCIONARIO Y TRADUCTOR
+        // VISTA: DICCIONARIO
         // ==========================================
         function DictionaryView({ deck, setDeck }) {
-            const [filter, setFilter] = useState('All');
             const [query, setQuery] = useState('');
             const [loading, setLoading] = useState(false);
-            const fileInputRef = useRef(null);
 
-            // Traductor Integrado (MyMemory API)
             const handleTranslate = async () => {
                 if(!query) return;
                 setLoading(true);
@@ -274,7 +369,7 @@
                     if(data.responseData.translatedText) {
                         const hz = data.responseData.translatedText;
                         const py = pinyin(hz, { toneType: 'symbol' });
-                        const newWord = { id: Date.now(), hanzi: hz, pinyin: py, translation: query, cat: 'Añadido', mastered: false };
+                        const newWord = { id: Date.now(), hanzi: hz, pinyin: py, translation: query, mastered: false };
                         setDeck([newWord, ...deck]);
                         setQuery('');
                     }
@@ -282,84 +377,31 @@
                 setLoading(false);
             };
 
-            const exportJSON = () => {
-                const blob = new Blob([JSON.stringify(deck, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = 'mi_diccionario_chino.json'; a.click();
-            };
-
-            const importJSON = (e) => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try { setDeck([...deck, ...JSON.parse(event.target.result)]); } 
-                    catch(err) { alert("Archivo inválido"); }
-                };
-                if(file) reader.readAsText(file);
-            };
-
-            const filteredDeck = deck.filter(w => filter === 'All' || w.cat === filter);
-
             return (
                 <div className="max-w-4xl mx-auto p-6 md:p-10 space-y-8">
-                    <div className="flex justify-between items-end">
-                        <div>
-                            <h2 className="text-3xl font-black text-slate-800">Glosario Maestro</h2>
-                            <p className="text-slate-500 font-medium mt-2">Tienes {deck.length} palabras guardadas.</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <button onClick={exportJSON} className="p-3 bg-white text-slate-600 rounded-xl shadow-sm border border-slate-200 hover:bg-slate-50"><Icons.Download/></button>
-                            <button onClick={() => fileInputRef.current.click()} className="p-3 bg-white text-slate-600 rounded-xl shadow-sm border border-slate-200 hover:bg-slate-50"><Icons.Upload/></button>
-                            <input type="file" ref={fileInputRef} onChange={importJSON} accept=".json" className="hidden" />
-                        </div>
-                    </div>
-
-                    {/* Traductor e Input Manual */}
+                    <h2 className="text-3xl font-black text-slate-800">Mi Diccionario</h2>
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex gap-4 items-end">
                         <div className="flex-1">
-                            <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Añadir nueva palabra (Español)</label>
-                            <input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleTranslate()} className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 font-bold" placeholder="Ej: Manzana..."/>
+                            <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Traducir al Chino</label>
+                            <input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleTranslate()} className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none" placeholder="Ej: Manzana..."/>
                         </div>
-                        <button onClick={handleTranslate} disabled={loading} className="px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition">
-                            {loading ? 'Traduciendo...' : 'Traducir y Guardar'}
+                        <button onClick={handleTranslate} disabled={loading} className="px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl">
+                            {loading ? '...' : 'Traducir y Guardar'}
                         </button>
                     </div>
 
-                    {/* Filtros */}
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                        {['All', 'Sustantivo', 'Verbo', 'Nombre Propio', 'Añadido'].map(f => (
-                            <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition ${filter === f ? 'bg-slate-800 text-white' : 'bg-white text-slate-500 border border-slate-200'}`}>
-                                {f === 'All' ? 'Todas' : f}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Lista */}
                     <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                        {filteredDeck.length === 0 ? <p className="p-10 text-center text-slate-400 font-bold italic">No hay palabras aquí.</p> :
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase text-slate-400 tracking-wider">
-                                        <th className="p-4 font-bold">Hanzi</th>
-                                        <th className="p-4 font-bold">Pinyin</th>
-                                        <th className="p-4 font-bold">Traducción</th>
-                                        <th className="p-4 font-bold text-center">Nivel</th>
-                                        <th className="p-4 font-bold text-center">Acción</th>
-                                    </tr>
+                        {deck.length === 0 ? <p className="p-10 text-center text-slate-400 font-bold">Aún no hay palabras guardadas.</p> :
+                            <table className="w-full text-left">
+                                <thead className="bg-slate-50 text-xs uppercase text-slate-400">
+                                    <tr><th className="p-4">Hanzi</th><th className="p-4">Traducción</th><th className="p-4">Acción</th></tr>
                                 </thead>
                                 <tbody>
-                                    {filteredDeck.map(word => (
-                                        <tr key={word.id} className="border-b border-slate-50 hover:bg-slate-50 transition group">
+                                    {deck.map(word => (
+                                        <tr key={word.id} className="border-t border-slate-50">
                                             <td className="p-4 text-2xl font-bold lang-zh text-indigo-600">{word.hanzi}</td>
-                                            <td className="p-4 font-serif text-slate-500">{word.pinyin}</td>
-                                            <td className="p-4 font-bold text-slate-700">{word.translation}</td>
-                                            <td className="p-4 text-center">
-                                                {word.mastered ? <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded font-bold">Dominada</span> : <span className="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded font-bold">Aprendiendo</span>}
-                                            </td>
-                                            <td className="p-4 text-center">
-                                                <button onClick={() => setDeck(deck.filter(w => w.id !== word.id))} className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><Icons.Trash/></button>
-                                            </td>
+                                            <td className="p-4 font-bold text-slate-700">{word.translation} <span className="text-xs text-slate-400 ml-2">{word.pinyin}</span></td>
+                                            <td className="p-4"><button onClick={() => setDeck(deck.filter(w => w.id !== word.id))} className="text-slate-300 hover:text-red-500"><Icons.Trash/></button></td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -371,25 +413,23 @@
         }
 
         // ==========================================
-        // VISTA 3: MODO FLASHCARDS (ESTUDIO)
+        // VISTA: MODO FLASHCARDS
         // ==========================================
         function FlashcardsView({ deck, setDeck, setProgress, progress }) {
             const studyDeck = deck.filter(w => !w.mastered);
             const [index, setIndex] = useState(0);
             const [isFlipped, setIsFlipped] = useState(false);
 
-            if (deck.length === 0) return <div className="p-20 text-center font-bold text-slate-400">Tu mazo está vacío. Añade palabras desde la Lección o Diccionario.</div>;
-            if (studyDeck.length === 0) return <div className="p-20 text-center font-bold text-emerald-500">¡Felicidades! Has dominado todas tus palabras guardadas.</div>;
+            if (deck.length === 0) return <div className="p-20 text-center font-bold text-slate-400">Tu mazo está vacío.</div>;
+            if (studyDeck.length === 0) return <div className="p-20 text-center font-bold text-emerald-500">¡Dominaste todo!</div>;
 
             const card = studyDeck[index];
 
             const handleAnswer = (knewIt) => {
                 if (knewIt) {
-                    // Marcar como dominada en el mazo maestro
                     setDeck(deck.map(w => w.id === card.id ? { ...w, mastered: true } : w));
                     setProgress({...progress, wordsMastered: progress.wordsMastered + 1});
                 } else {
-                    // Pasa a la siguiente si no la supo
                     setIndex((index + 1) % studyDeck.length);
                 }
                 setIsFlipped(false);
@@ -401,13 +441,9 @@
                     
                     <div className="w-full h-96 perspective-1000 cursor-pointer" onClick={() => setIsFlipped(!isFlipped)}>
                         <div className={`card-inner shadow-2xl rounded-[3rem] ${isFlipped ? 'is-flipped' : ''}`}>
-                            {/* FRONT (Hanzi) */}
                             <div className="absolute w-full h-full backface-hidden bg-white border-4 border-slate-100 rounded-[3rem] flex flex-col items-center justify-center">
-                                <span className="absolute top-6 right-8 text-xs font-bold text-slate-300 uppercase">{index + 1} / {studyDeck.length}</span>
                                 <div className="text-9xl font-black lang-zh text-slate-800">{card.hanzi}</div>
-                                <p className="mt-8 text-sm font-bold text-slate-400">Toca para revelar</p>
                             </div>
-                            {/* BACK (Significado y Pinyin) */}
                             <div className="absolute w-full h-full backface-hidden bg-indigo-600 rounded-[3rem] flex flex-col items-center justify-center text-white [transform:rotateY(180deg)] px-8 text-center">
                                 <p className="text-4xl font-serif text-indigo-200 mb-6">{card.pinyin}</p>
                                 <h3 className="text-5xl font-black leading-tight">{card.translation}</h3>
@@ -415,141 +451,113 @@
                         </div>
                     </div>
 
-                    {/* Botones de Autoevaluación (Aparecen al voltear) */}
-                    <div className={`mt-10 flex gap-4 transition-opacity duration-300 ${isFlipped ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                        <button onClick={(e) => { e.stopPropagation(); handleAnswer(false); }} className="px-8 py-4 bg-white text-rose-500 font-black rounded-2xl shadow-sm border border-rose-100 hover:bg-rose-50 transition w-40">
-                            Repasar
-                        </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleAnswer(true); }} className="px-8 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-lg hover:bg-emerald-600 transition w-40">
-                            Lo sabía
-                        </button>
+                    <div className={`mt-10 flex gap-4 transition-opacity ${isFlipped ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                        <button onClick={(e) => { e.stopPropagation(); handleAnswer(false); }} className="px-8 py-4 bg-white text-rose-500 font-black rounded-2xl shadow-sm border border-rose-100 w-40">Repasar</button>
+                        <button onClick={(e) => { e.stopPropagation(); handleAnswer(true); }} className="px-8 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-lg w-40">Lo sabía</button>
                     </div>
                 </div>
             );
         }
 
         // ==========================================
-        // VISTA 4: PROGRESO HSK
+        // VISTA: PROGRESO HSK
         // ==========================================
-        function ProgressView({ progress, deck }) {
-            const totalWordsGoal = 150; // HSK 1 approx
-            const mastered = deck.filter(w=>w.mastered).length;
-            const percentage = Math.min(100, Math.round((mastered / totalWordsGoal) * 100));
-
+        function ProgressView({ progress, totalLessons }) {
+            const percentage = totalLessons > 0 ? Math.round((progress.completedLessons.length / totalLessons) * 100) : 0;
             return (
                 <div className="max-w-4xl mx-auto p-10">
-                    <h2 className="text-3xl font-black text-slate-800 mb-10">Tu Progreso</h2>
-                    <div className="bg-white p-10 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center text-center">
-                        <div className="relative w-48 h-48 mb-6">
-                            <svg className="w-full h-full" viewBox="0 0 36 36">
-                                <path className="text-slate-100" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path className="text-emerald-500" strokeDasharray={`${percentage}, 100`} strokeWidth="3" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl font-black text-slate-800">
-                                {percentage}%
-                            </div>
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-700">Progreso Vocabulario HSK 1</h3>
-                        <p className="text-slate-500 mt-2">Has dominado {mastered} de {totalWordsGoal} palabras necesarias.</p>
+                    <h2 className="text-3xl font-black text-slate-800 mb-10">Tu Progreso HSK</h2>
+                    <div className="bg-white p-10 rounded-[2rem] shadow-sm flex flex-col items-center text-center">
+                        <div className="text-6xl font-black text-emerald-500 mb-2">{progress.wordsMastered}</div>
+                        <h3 className="text-xl font-bold text-slate-700">Palabras Dominadas</h3>
+                        <p className="mt-8 text-slate-500 font-medium">Lecciones del curso: {progress.completedLessons.length} / {totalLessons} ({percentage}%)</p>
                     </div>
                 </div>
             );
         }
 
-        // ==========================================
-        // COMPONENTES DE APOYO INTERACTIVOS
-        // ==========================================
-
-        // Botón de la barra lateral
         const SidebarBtn = ({ active, icon, text, onClick }) => (
-            <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-colors ${active ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'}`}>
+            <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-colors ${active ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>
                 {icon} {text}
             </button>
         );
 
-        // Constructor de Frases (Duolingo Style)
         function SentenceBuilder({ target, words }) {
             const [selected, setSelected] = useState([]);
-            const [pool, setPool] = useState([...words].sort(() => Math.random() - 0.5));
-            const [status, setStatus] = useState(null); // null, 'success', 'error'
+            const [pool, setPool] = useState([]);
+            const [status, setStatus] = useState(null);
+
+            useEffect(() => {
+                setPool([...words].sort(() => Math.random() - 0.5));
+                setSelected([]);
+                setStatus(null);
+            }, [words]);
 
             const selectWord = (word, idx) => {
                 setSelected([...selected, word]);
-                const newPool = [...pool];
-                newPool.splice(idx, 1);
-                setPool(newPool);
+                const newPool = [...pool]; newPool.splice(idx, 1); setPool(newPool);
             };
 
             const deselectWord = (word, idx) => {
-                const newSelected = [...selected];
-                newSelected.splice(idx, 1);
-                setSelected(newSelected);
+                const newSelected = [...selected]; newSelected.splice(idx, 1); setSelected(newSelected);
                 setPool([...pool, word]);
             };
 
             const checkAnswer = () => {
                 if(selected.join('') === target) setStatus('success');
                 else setStatus('error');
-                setTimeout(() => setStatus(null), 2000);
+                setTimeout(() => setStatus(null), 2000); 
             };
 
             return (
                 <div>
-                    {/* Área de construcción */}
                     <div className="min-h-[60px] p-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-wrap gap-2 mb-4">
                         {selected.map((w, i) => (
-                            <span key={i} onClick={() => deselectWord(w, i)} className="px-4 py-2 bg-white border border-slate-300 rounded-xl font-bold cursor-pointer hover:bg-slate-100 shadow-sm lang-zh text-lg">{w}</span>
+                            <span key={i} onClick={() => deselectWord(w, i)} className="px-4 py-2 bg-white border border-slate-300 rounded-xl font-bold cursor-pointer hover:bg-slate-100 lang-zh text-lg">{w}</span>
                         ))}
                     </div>
-                    {/* Banco de palabras */}
                     <div className="flex flex-wrap gap-2 mb-6 justify-center">
                         {pool.map((w, i) => (
-                            <span key={i} onClick={() => selectWord(w, i)} className="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-xl font-bold cursor-pointer hover:bg-indigo-100 shadow-sm lang-zh text-lg">{w}</span>
+                            <span key={i} onClick={() => selectWord(w, i)} className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl font-bold cursor-pointer hover:bg-indigo-100 lang-zh text-lg">{w}</span>
                         ))}
                     </div>
                     <div className="flex justify-between items-center">
-                        <button onClick={checkAnswer} disabled={selected.length === 0} className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 disabled:opacity-50">Comprobar</button>
+                        <button onClick={checkAnswer} disabled={selected.length === 0} className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700">Comprobar</button>
                         {status === 'success' && <span className="font-bold text-emerald-500">¡Correcto! 🎉</span>}
-                        {status === 'error' && <span className="font-bold text-rose-500">Inténtalo de nuevo</span>}
+                        {status === 'error' && <span className="font-bold text-rose-500">Error, inténtalo de nuevo</span>}
                     </div>
                 </div>
             );
         }
 
-        // Canvas para escritura de Hanzi (Usando HanziWriter CDN)
         function HanziCanvas({ character }) {
             const canvasRef = useRef(null);
             const writerRef = useRef(null);
 
             useEffect(() => {
-                // Instanciar el escritor en el contenedor montado
-                if(canvasRef.current && window.HanziWriter) {
-                    canvasRef.current.innerHTML = ''; // Limpiar previo
+                if(canvasRef.current && window.HanziWriter && character) {
+                    canvasRef.current.innerHTML = ''; 
                     writerRef.current = HanziWriter.create(canvasRef.current, character, {
-                        width: 200,
-                        height: 200,
-                        padding: 10,
-                        showOutline: true,
-                        strokeAnimationSpeed: 1.5,
-                        delayBetweenStrokes: 100,
-                        strokeColor: '#4f46e5', // Indigo-600
-                        outlineColor: '#e2e8f0' // Slate-200
+                        width: 150, height: 150, padding: 10, showOutline: true, strokeAnimationSpeed: 1.5,
+                        strokeColor: '#4f46e5', outlineColor: '#e2e8f0'
                     });
                 }
             }, [character]);
 
+            if (!character) return <p className="text-slate-400">No hay carácter asignado.</p>;
+
             return (
                 <div className="flex flex-col items-center">
-                    <div ref={canvasRef} className="bg-white border-2 border-slate-200 rounded-3xl shadow-inner cursor-pointer" onClick={() => writerRef.current?.animateCharacter()}></div>
+                    <p className="font-bold text-slate-700 text-lg mb-2 lang-zh">{character}</p>
+                    <div ref={canvasRef} className="bg-white border-2 border-slate-200 rounded-2xl shadow-inner cursor-pointer" onClick={() => writerRef.current?.animateCharacter()}></div>
                     <div className="flex gap-2 mt-4">
-                        <button onClick={() => writerRef.current?.animateCharacter()} className="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-lg hover:bg-slate-200 text-sm">Animar Trazos</button>
-                        <button onClick={() => writerRef.current?.quiz()} className="px-4 py-2 bg-indigo-100 text-indigo-700 font-bold rounded-lg hover:bg-indigo-200 text-sm">Practicar (Quiz)</button>
+                        <button onClick={() => writerRef.current?.animateCharacter()} className="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-lg text-sm">Ver Animación</button>
+                        <button onClick={() => writerRef.current?.quiz()} className="px-4 py-2 bg-indigo-100 text-indigo-700 font-bold rounded-lg text-sm">Dibujar tú mismo</button>
                     </div>
                 </div>
             );
         }
 
-        // Renderizado Final en React 18
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
